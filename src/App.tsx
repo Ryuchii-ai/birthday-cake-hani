@@ -77,7 +77,7 @@ const BACKGROUND_FADE_START = Math.max(
 );
 
 const TYPED_LINES = [
-  "> Hani",
+  "> Hany Laura Falentina",
   "...",
   "> today is your birthday",
   "...",
