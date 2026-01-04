@@ -367,7 +367,8 @@ function EnvironmentBackgroundController({
 
 
 export default function App() {
-  const [hasStarted, setHasStarted] = useState(true);
+  // start hanya setelah interaksi pengguna (klik/tap)
+  const [hasStarted, setHasStarted] = useState(false);
   const [backgroundOpacity, setBackgroundOpacity] = useState(1);
   const [environmentProgress, setEnvironmentProgress] = useState(0);
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
@@ -385,6 +386,8 @@ export default function App() {
     audio.loop = true;
     audio.preload = "auto";
     backgroundAudioRef.current = audio;
+
+    // jangan coba autoplay di mount (kita akan mulai saat interaksi)
     return () => {
       audio.pause();
       backgroundAudioRef.current = null;
@@ -404,6 +407,22 @@ export default function App() {
       // ignore play errors (browser might block)
     });
   }, []);
+
+  // mulai saat interaksi pertama (klik / tap)
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      playBackgroundMusic();
+      setHasStarted(true);
+    };
+    // gunakan pointerdown untuk menangani click/tap/pen, dan touchstart sebagai fallback
+    window.addEventListener("pointerdown", handleFirstInteraction, { once: true });
+    window.addEventListener("touchstart", handleFirstInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener("pointerdown", handleFirstInteraction);
+      window.removeEventListener("touchstart", handleFirstInteraction);
+    };
+  }, [playBackgroundMusic]);
 
   const typingComplete = currentLineIndex >= TYPED_LINES.length;
   const typedLines = useMemo(() => {
