@@ -384,6 +384,7 @@ export default function App() {
     const audio = new Audio("/bungamaaf.mp3");
     audio.loop = true;
     audio.preload = "auto";
+    audio.volume = 0.5; // Set volume to 50%
     backgroundAudioRef.current = audio;
     return () => {
       audio.pause();
@@ -394,14 +395,18 @@ export default function App() {
   const playBackgroundMusic = useCallback(() => {
     const audio = backgroundAudioRef.current;
     if (!audio) {
+      console.log("No audio element");
       return;
     }
     if (!audio.paused) {
+      console.log("Audio already playing");
       return;
     }
     audio.currentTime = 0;
-    void audio.play().catch(() => {
-      // ignore play errors (browser might block)
+    void audio.play().then(() => {
+      console.log("Audio started playing");
+    }).catch((error) => {
+      console.log("Audio play failed:", error);
     });
   }, []);
 
